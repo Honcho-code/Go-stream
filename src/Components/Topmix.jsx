@@ -6,24 +6,24 @@ import Spinner from "./Spinner";
 const Topmix = () => {
   const [loading, setLoading] = useState(false)
   const [topmix, setTopmix] = useState([])
-  const BASE_URL =  "https://api.deezer.com"
+  const BASE_URL =  "https://go-stream-livid.vercel.app/api/deezer"
 
-  useEffect(()=>{
-    setLoading(true)
-    const fetchTopMix = async()=>{
-      try {
-        const res = await fetch(`${BASE_URL}/chart/0/tracks`)
-        const data = await res.json()
-        setTopmix(data.data)
-        setLoading(false)
-        console.log(data);
-      } catch (error) {
-        console.log("error fetching top mix:", error);
-        setLoading(false)
-      }
+ useEffect(() => {
+  setLoading(true);
+  const fetchTopMix = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}?endpoint=chart/0/tracks`);
+      const data = await res.json();
+      setTopmix(data.data);
+      setLoading(false);
+      console.log(data);
+    } catch (error) {
+      console.log("error fetching top mix:", error);
+      setLoading(false);
     }
-    fetchTopMix()
-  },[])
+  };
+  fetchTopMix();
+}, []);
   if(loading){
     return <Spinner/>
   }

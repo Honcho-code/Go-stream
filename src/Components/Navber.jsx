@@ -85,7 +85,7 @@ const Navber = () => {
       </div>
       {menuBar && (
         <div className="absolute top-0 z-50 h-screen w-[100%] bg-zinc-900/50">
-          <div className="w-[60%] bg-zinc-800 h-screen z-50 px-4 py-4">
+          <div className="w-[60%] bg-zinc-900 h-screen z-50 px-4 py-4">
             <div className="flex justify-between items-center md:hidden">
               <img src="/full-logo1.png" alt="" className="w-30" />
               <div className="menu-btn" onClick={() => setMenuBar(!menuBar)}>
