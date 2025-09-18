@@ -20,9 +20,12 @@
 body{
     @apply bg-zinc-900 text-white
 }
-.reveal-up{
-    @apply translate-y-20 opacity-0
+.music-banner{
+    background: -webkit-linear-gradient(360deg, #fafafa, #a1a1a1);;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
+
 .menu-btn{
     @apply w-8 h-8 md:w-10 md:h-10 grid place-items-center bg-zinc-50/10 md:rounded-lg ring-inset ring-1 ring-zinc-50/[0.02] rounded-sm backdrop-blur-2xl hover:bg-zinc-50/15 transition-[transform,background-color] active:scale-95 cursor-pointer
 }
@@ -44,7 +47,7 @@ body{
 }
 
 .btn{
-    @apply max-w-max h-9 flex items-center gap-2 px-4 font-medium text-sm ring-1 ring-zinc-50/5 ring-inset transition-[background-color] rounded-xl
+    @apply max-w-max h-9 flex items-center gap-2 px-4 font-medium text-sm ring-1 ring-zinc-50/5 ring-inset transition-[background-color] rounded-xl cursor-pointer
 }
 .btn-secondary{
     @apply bg-zinc-50 text-zinc-900 active:bg-zinc-50/80
@@ -68,7 +71,7 @@ body{
 }
 
 /* * TYPOGRAPHY */
-.headline-1, .headline-2{
+.headline-1, .headline-2, .headline-3{
     @apply max-w-max;
     background: -webkit-linear-gradient(0deg, #fafafa, #a1a1a1);;
     -webkit-background-clip: text;
@@ -88,6 +91,9 @@ body{
 }
 .headline-2{
     @apply text-3xl lg:text-4xl lg:leading-tight font-semibold
+}
+.headline-3{
+    @apply text-xl md:text-2xl lg:text-3xl lg:leading-tight font-semibold
 }
 .title-1{
     @apply text-[22px] font-normal
