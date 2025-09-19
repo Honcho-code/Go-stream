@@ -1,28 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import Spinner from "./Spinner";
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { PlayerContext, usePlayer } from "../context/PlayerContext";
 
-const Topmix = () => {
+const Tracks = () => {
   const [loading, setLoading] = useState(false);
   const [topmix, setTopmix] = useState([]);
   const BASE_URL = "https://go-stream-livid.vercel.app/api/deezer";
-
+  const {playTrack} = useContext(PlayerContext)
   useEffect(() => {
     setLoading(true);
     const fetchTopMix = async () => {
       try {
-        const res = await fetch(`${BASE_URL}?endpoint=chart/0/playlists`);
+        const res = await fetch(`${BASE_URL}?endpoint=chart/0/tracks`)
         const data = await res.json();
 
-        // ✅ filter out playlists with missing picture or title
-        const validMixes = (data.data || []).filter(
-          (mix) => mix.picture_medium && mix.title && mix.user?.name
-        );
+        
         setLoading(false);
-        setTopmix(validMixes);
+        setTopmix(data.data);
       } catch (error) {
         console.log("error fetching top mix:", error);
       } finally {
@@ -31,41 +28,39 @@ const Topmix = () => {
     };
     fetchTopMix();
   }, []);
-
-  if (loading) {
-    return;
+  if(loading){
+    return 
   }
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
-      className="mx-4"
+      className="mx-4 mt-5"
     >
       <div>
-        <h1 className="headline-3">Your top mixex</h1>
+        <h1 className="headline-3">Your tracks</h1>
         <div className="overflow-x-auto scrollbar-hide scrollbar-track-transparent">
-          <div className="flex mt-5 gap-4 flex-shrink-0 w-40 md:w-80 h-40 md:h-80">
+          <div className="flex mt-5 gap-4 flex-shrink-0 w-30 md:w-50 h-30 md:h-50">
             {topmix.map((mix) => (
-              <Link
-                to={`/music/${mix.type}/${mix.id}`}
+              <div
                 key={mix.id}
-                className="relative w-40 md:w-80 h-40 md:h-80 rounded-lg overflow-hidden flex-shrink-0"
+                className="relative w-30 md:w-50 h-30 md:h-50 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                onClick={()=>playTrack(mix, topmix)}
               >
                 <img
-                  src={mix.picture_medium}
+                  src={mix.album.cover_medium}
                   alt={mix.title}
                   className="w-full h-full object-cover"
                 />
-                
-
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                   <h2 className="text-white text-lg font-semibold">
                     {mix.title}
                   </h2>
-                  <p className="text-gray-300 text-sm">{mix.user.name}</p>
+                  <p className="text-gray-300 text-sm">{mix.artist.name}</p>
                 </div>
-              </Link>
+                
+              </div>
             ))}
           </div>
         </div>
@@ -74,4 +69,4 @@ const Topmix = () => {
   );
 };
 
-export default Topmix;
+export default Tracks;

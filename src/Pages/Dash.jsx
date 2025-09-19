@@ -1,18 +1,21 @@
-import React from 'react'
-import Navber from '../Components/Navber'
-import Banner from '../Components/Banner'
-import Topmix from '../Components/Topmix'
-import RecentListen from '../Components/RecentListen'
+import Navber from "../Components/Navber";
+import Banner from "../Components/Banner";
+import Topmix from "../Components/Topmix";
+import RecentListen from "../Components/RecentListen";
+import Related from "../Components/Related";
+import Tracks from "../Components/Tracks";
 
 const Dash = () => {
   return (
-    <div>
-        <Navber/>
-        <Banner/>
-        <Topmix/>
-        <RecentListen/>
+    <div className=" mb-20">
+      <Navber />
+      <Banner />
+      <Topmix />
+      <Related />
+      <Tracks />
+      <RecentListen />
     </div>
-  )
-}
+  );
+};
 
-export default Dash
+export default Dash;

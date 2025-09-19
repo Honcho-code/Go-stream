@@ -6,16 +6,21 @@ import Dash from "./Pages/Dash";
 import { useState } from "react";
 import MusicDetails from "./Pages/MusicDetails";
 import Navber from "./Components/Navber";
-import Library from "./Pages/Library";
+import SearchPage from "./Pages/Search";
+import { PlayerProvider } from "./context/PlayerContext";
+import Favorite from "./Pages/Favorite";
+import Profile from "./Pages/Profile";
 function App() {
   const [fullCenterDisplay, setFullCenterDisplay] = useState(false)
   return (
-    <BrowserRouter>
+      <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home fullCenterDisplay={fullCenterDisplay} setFullCenterDisplay={setFullCenterDisplay}/>}>
           <Route path="/" element={<Dash />} />
-          <Route path="/music" element={<MusicDetails />} />
-          <Route path="/library" element={<Library />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/music/:type/:id" element={<MusicDetails />} />
+          <Route path="/favorite" element={<Favorite />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
       <ToastContainer

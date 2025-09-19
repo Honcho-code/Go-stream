@@ -12,15 +12,22 @@ import {
   User,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { auth, provider } from "../config/firebase";
+import Spinner from "./Spinner";
+import { PlayerContext, usePlayer } from "../context/PlayerContext";
 
 const Navber = () => {
   const [menuBar, setMenuBar] = useState(false);
   const location = useLocation();
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [searchedMusic, setSearchMusic] = useState();
+  const BASE_URL = "https://go-stream-livid.vercel.app/api/deezer";
+  const { playTrack } = useContext(PlayerContext);
+  const user = auth?.currentUser
   const handleSignin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -31,6 +38,32 @@ const Navber = () => {
       console.error("error signing in", error);
     }
   };
+  const formatDuration = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+  
+  useEffect(() => {
+    if (!search.trim()) {
+      setSearchMusic([]);
+      return;
+    }
+    setLoading(true);
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const res = await fetch(`${BASE_URL}?endpoint=search?q=${search}`);
+        const data = await res.json();
+        setSearchMusic(data.data || []);
+        console.log(data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setLoading(false);
+      }
+    }, 500);
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
 
   const isAuthenticated = auth?.currentUser;
 
@@ -48,13 +81,59 @@ const Navber = () => {
             </div>
           </div>
           {isHome && (
-            <div className="md:flex gap-2 place-items-center bg-zinc-50/10 md:rounded-lg ring-inset ring-1 ring-zinc-50/[0.02] rounded-sm backdrop-blur-2xl hover:bg-zinc-50/15 transition-[transform,background-color] cursor-pointer h-8 md:h-10 px-3 w-sm">
-              <Search className="text-zinc-400" />
-              <input
-                type="text"
-                placeholder="What do you want to stream"
-                className="w-full outline-none"
-              />
+            <div className="relative">
+              <div className="md:flex gap-2 place-items-center bg-zinc-50/10 md:rounded-lg ring-inset ring-1 ring-zinc-50/[0.02] rounded-sm backdrop-blur-2xl hover:bg-zinc-50/15 transition-[transform,background-color] cursor-pointer h-8 md:h-10 px-3 w-sm">
+                <form className="flex items-center gap-2 w-full">
+                  <Search className="text-zinc-400" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search songs, albums, playlist, artist..."
+                    className="w-full outline-none"
+                  />
+                </form>
+                <div
+                  onClick={() => setSearch("")}
+                  className={`${search.length > 0 ? "block" : "hidden"}`}
+                >
+                  <X className="text-zinc-300" />
+                </div>
+              </div>
+              {search && (
+                <div className="absolute bg-zinc-950/40 w-full h-80 z-50 rounded-b-2xl backdrop-blur-3xl overflow-y-auto scrollbar-hide scrollbar-track-transparent px-4 py-4">
+                  {loading ? (
+                    <Spinner />
+                  ) : searchedMusic.length > 0 ? (
+                    searchedMusic.map((music) => (
+                      <div
+                        key={music.id}
+                        className="mb-2 cursor-pointer"
+                        onClick={() => playTrack(music, searchedMusic)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={music?.album?.cover_small}
+                            alt={music?.title}
+                            className="w-10 h-10 object-cover rounded"
+                          />
+                          <div>
+                            <p className="text-sm font-medium">
+                              {music?.title}
+                            </p>
+                            <p className="text-xs text-zinc-400">
+                              {music?.artist?.name} •{" "}
+                              {formatDuration(music?.duration)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-zinc-500">No results found.</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
           {isAuthenticated ? (
@@ -78,8 +157,13 @@ const Navber = () => {
               </div>
             </div>
           )}
-          <div className="menu-btn" onClick={() => setMenuBar(!menuBar)}>
-            <Menu />
+          <div className="flex gap-4">
+            <div className="menu-btn" onClick={() => navigate("/search")}>
+              <Search />
+            </div>
+            <div className="menu-btn" onClick={() => setMenuBar(!menuBar)}>
+              <Menu />
+            </div>
           </div>
         </div>
       </div>
@@ -97,22 +181,14 @@ const Navber = () => {
                 <Home className="size-6" />
                 <p className="text-lg">Home</p>
               </NavLink>
-              <NavLink to={"/library"} className="flex gap-3 items-center">
-                <Library className="size-6" />
-                <p className="text-lg">Library</p>
-              </NavLink>
-              <NavLink to={"/music"} className="flex gap-3 items-center">
-                <User className="size-6" />
-                <p className="text-lg">Profile</p>
-              </NavLink>
-              <NavLink to={"/music"} className="flex gap-3 items-center">
+              <NavLink to={"/favorite"} className={`flex gap-3 items-center ${!user ? "hidden" : "block"}`}>
                 <Heart className="size-6" />
                 <p className="text-lg">Favorites</p>
               </NavLink>
-              <div className="flex gap-3 items-center">
-                <Plus className="size-6" />
-                <p className="text-lg">Create Playlist</p>
-              </div>
+              <NavLink to={"/profile"} className={`flex gap-3 items-center ${!user ? "hidden" : "block"}`}>
+                <User className="size-6" />
+                <p className="text-lg">Profile</p>
+              </NavLink>
             </div>
             <div className="absolute bottom-10 w-[60%]">
               {isAuthenticated ? (
