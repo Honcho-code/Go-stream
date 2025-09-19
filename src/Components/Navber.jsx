@@ -168,7 +168,7 @@ const Navber = () => {
         </div>
       </div>
       {menuBar && (
-        <div className="absolute top-0 z-50 h-screen w-[100%] bg-zinc-900/50 overflow-hidden">
+        <div className="absolute top-0 z-50 h-screen w-[100%] bg-zinc-900/50">
           <div className="w-[60%] bg-zinc-900 h-screen z-50 px-4 py-4">
             <div className="flex justify-between items-center md:hidden">
               <img src="/full-logo1.png" alt="" className="w-30" />
@@ -190,7 +190,7 @@ const Navber = () => {
                 <p className="text-lg">Profile</p>
               </NavLink>
             </div>
-            <div className="absolute bottom-20 w-[60%]">
+            <div className="absolute bottom-30 w-[60%]">
               {isAuthenticated ? (
                 <div className="flex gap-2 items-center">
                   <div className="w-8 h-8 rounded-full overflow-hidden cursor-pointer">
@@ -202,7 +202,7 @@ const Navber = () => {
                   </div>
                 </div>
               ) : (
-                <button className="btn " onClick={handleSignin}>
+                <button className="bg-zinc-800 ring-1 px-4 py-2 rounded-lg " onClick={handleSignin}>
                   Sign in
                 </button>
               )}
